@@ -1,0 +1,36 @@
+# Python
+*.pyc
+__pycache__/
+venv/
+env/
+dist/
+build/
+*.egg-info/
+*.egg
+*.log
+
+# FastAPI
+/.env
+/.vscode
+/.idea
+
+# Database
+/db.sqlite3
+
+# Dependency directories
+/.venv
+/lib/
+/lib64/
+/include/
+/bin/
+/build/
+/docs/_build/
+
+# Editor/IDE specific files
+*.swp
+*.swo
+*.swn
+*.swm
+*.bak
+.DS_Store
+Thumbs.db

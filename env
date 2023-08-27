@@ -1,0 +1,2 @@
+# postgresql://{user}:{password}@{host}:{port}/{db_name}
+SQLALCHEMY_DB_URL=postgresql://:@:/
