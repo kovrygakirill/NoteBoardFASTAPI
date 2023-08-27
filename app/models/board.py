@@ -33,6 +33,7 @@ class Board(Base):
         DateTime,
         onupdate=func.now()
     )
+
     notes = relationship(
         "Note",
         back_populates="board"

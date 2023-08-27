@@ -42,8 +42,10 @@ class Note(Base):
 
     board_id = Column(
         UUID,
-        ForeignKey("boards.id"),
-        ondelete="CASCADE",
+        ForeignKey(
+            "boards.id",
+            ondelete="CASCADE",
+        ),
     )
     board = relationship(
         "Board",
