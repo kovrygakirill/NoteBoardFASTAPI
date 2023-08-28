@@ -1,13 +1,11 @@
-import os
-
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 
+from app.config import settings
 
-SQLALCHEMY_DB_URL = os.environ['SQLALCHEMY_DB_URL']
 engine = create_engine(
-    SQLALCHEMY_DB_URL,
+    settings.SQLALCHEMY_DB_URL,
     pool_pre_ping=True,
 )
 

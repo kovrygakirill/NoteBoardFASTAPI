@@ -7,7 +7,6 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship
 
 from app.db import Base
 
@@ -33,9 +32,3 @@ class Board(Base):
         DateTime,
         onupdate=func.now()
     )
-
-    notes = relationship(
-        "Note",
-        back_populates="board"
-    )
-

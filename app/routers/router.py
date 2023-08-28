@@ -5,7 +5,12 @@ from app.routers import (
     board,
 )
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/v1",
+    tags=["v1"],
+    dependencies=[],
+    responses={404: {"description": "Not found"}},
+)
 
 router.include_router(
     note.router,

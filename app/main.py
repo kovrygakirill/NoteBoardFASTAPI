@@ -16,6 +16,6 @@ app.add_middleware(
 
 app.include_router(
     router_api,
-    prefix="/api/v1"
+    prefix="/api"
 )
 

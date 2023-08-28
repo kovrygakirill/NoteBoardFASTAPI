@@ -2,8 +2,6 @@ from uuid import UUID
 from datetime import datetime
 from pydantic import BaseModel
 
-from models.board import Board
-
 
 class NoteBase(BaseModel):
     id: UUID
@@ -17,9 +15,9 @@ class NoteCreate(BaseModel):
 class Note(NoteBase):
     text: str
     created_at: datetime
-    updated_at: datetime
+    updated_at: datetime | None
     views: int
-    board: Board
 
-    class Config:
-        orm_mode = True
+
+class NoteUpdate(BaseModel):
+    text: str | None = None
