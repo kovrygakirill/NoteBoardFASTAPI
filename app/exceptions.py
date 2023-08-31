@@ -9,3 +9,8 @@ NoteNotExist = HTTPException(
     status_code=status.HTTP_404_NOT_FOUND,
     detail="Could not find note",
 )
+
+NoteNotBelongBoard = HTTPException(
+    status_code=status.HTTP_404_NOT_FOUND,
+    detail="Could not find note on the board",
+)

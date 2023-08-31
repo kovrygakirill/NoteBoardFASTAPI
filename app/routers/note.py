@@ -4,13 +4,11 @@ from fastapi import (
     APIRouter,
     Depends,
 )
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import note as models
 from app.schemas import note as schemas
 from app.service import note as service
-from app.db import get_db
-
+from app.db import get_db as session
 
 router = APIRouter()
 
@@ -20,11 +18,11 @@ router = APIRouter()
     response_model=schemas.NoteBase,
     status_code=201
 )
-def create_note(
+async def create_note(
         note: schemas.NoteCreate,
-        db: Session = Depends(get_db)
-) -> models.Note:
-    return service.create_note(
+        db: AsyncSession = Depends(session)
+):
+    return await service.create_note(
         note_data=note,
         db=db,
     )
@@ -35,11 +33,11 @@ def create_note(
     response_model=schemas.Note,
     status_code=200
 )
-def get_board(
+async def get_note(
         note_id: UUID,
-        db: Session = Depends(get_db)
-) -> models.Note:
-    return service.get_note_by_id(
+        db: AsyncSession = Depends(session)
+):
+    return await service.get_note_by_id(
         note_id=note_id,
         db=db
     )
@@ -50,10 +48,10 @@ def get_board(
     response_model=list[schemas.Note],
     status_code=200
 )
-def get_boards(
-        db: Session = Depends(get_db)
-) -> list[models.Note]:
-    return service.get_notes(db=db)
+async def get_notes(
+        db: AsyncSession = Depends(session)
+):
+    return await service.get_notes(db=db)
 
 
 @router.put(
@@ -61,12 +59,12 @@ def get_boards(
     response_model=schemas.Note,
     status_code=200
 )
-def update_board(
+async def update_note(
         note_id: UUID,
         note: schemas.NoteUpdate,
-        db: Session = Depends(get_db)
-) -> models.Note:
-    return service.update_note(
+        db: AsyncSession = Depends(session)
+):
+    return await service.update_note(
         note_id=note_id,
         note_data=note,
         db=db,
@@ -77,11 +75,25 @@ def update_board(
     "/{note_id}",
     status_code=204
 )
-def delete_board(
+async def delete_note(
         note_id: UUID,
-        db: Session = Depends(get_db)
+        db: AsyncSession = Depends(session)
 ):
-    return service.delete_note(
+    return await service.delete_note(
+        note_id=note_id,
+        db=db,
+    )
+
+
+@router.post(
+    "/{note_id}/views",
+    status_code=204
+)
+async def increment_note_views(
+        note_id: UUID,
+        db: AsyncSession = Depends(session)
+):
+    return await service.increment_note_views(
         note_id=note_id,
         db=db,
     )

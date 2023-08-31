@@ -1,39 +1,33 @@
 from uuid import UUID
 
-from fastapi import Depends
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import note as models
+from app.models.note import Note
 from app.schemas import note as schemas
-from app import crud
 from app.service import board as service_board
-from app.db import get_db
+from app.crud.note import NoteCRUD
 from app.exceptions import NoteNotExist
 
 
-def create_note(
+async def create_note(
         note_data: schemas.NoteCreate,
-        db: Session = Depends(get_db)
-) -> models.Note:
-    board = service_board.get_board_by_id(
+        db: AsyncSession,
+) -> Note:
+    board = await service_board.get_board_by_id(
         board_id=note_data.board_id,
         db=db
     )
-    return crud.create_obj(
-        type_obj=models.Note,
-        obj_data=note_data,
-        db=db,
+    return await NoteCRUD(db=db).create_note(
+        data=note_data,
     )
 
 
-def get_note_by_id(
+async def get_note_by_id(
         note_id: UUID,
-        db: Session = Depends(get_db)
-) -> models.Note:
-    note = crud.get_obj(
-        type_obj=models.Note,
-        obj_id=note_id,
-        db=db,
+        db: AsyncSession,
+) -> Note:
+    note = await NoteCRUD(db=db).get_note(
+        note_id=note_id,
     )
 
     if not note:
@@ -42,47 +36,58 @@ def get_note_by_id(
     return note
 
 
-def get_notes(
-        db: Session = Depends(get_db)
-) -> list[models.Note]:
-    return crud.get_objs(
-        type_obj=models.Note,
-        db=db,
-    )
+async def get_notes(
+        db: AsyncSession
+) -> list[Note]:
+    return await NoteCRUD(db=db).get_notes()
 
 
-def update_note(
+async def update_note(
         note_id: UUID,
         note_data: schemas.NoteUpdate,
-        db: Session,
-) -> models.Note:
-    note = get_note_by_id(
+        db: AsyncSession,
+) -> Note:
+    note = await get_note_by_id(
         note_id=note_id,
         db=db,
     )
-    board = service_board.get_board_by_id(
-        board_id=note.board_id,
-        db=db,
+
+    if board_id := note_data.board_id:
+        board = await service_board.get_board_by_id(
+            board_id=board_id,
+            db=db,
+        )
+
+    return await NoteCRUD(db=db).update_note(
+        note_id=note_id,
+        update_data=note_data,
     )
 
-    return crud.update_obj(
-        type_obj=models.Note,
-        obj_id=note_id,
-        obj_data=note_data,
-        db=db,
-    )
 
-
-def delete_note(
+async def delete_note(
         note_id: UUID,
-        db: Session = Depends(get_db)
+        db: AsyncSession,
 ) -> bool:
-    note = get_note_by_id(
+    note = await get_note_by_id(
         note_id=note_id,
         db=db,
     )
 
-    return crud.remove_obj(
-        obj=note,
+    return await NoteCRUD(db=db).delete_note(
+        note=note,
+    )
+
+
+async def increment_note_views(
+        note_id: UUID,
+        db: AsyncSession,
+) -> True:
+    note = await get_note_by_id(
+        note_id=note_id,
         db=db,
     )
+    note.views += 1
+
+    await db.commit()
+
+    return True

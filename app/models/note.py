@@ -49,5 +49,5 @@ class Note(Base):
     )
     board = relationship(
         "Board",
-        backref="notes"
+        back_populates="notes"
     )

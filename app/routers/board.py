@@ -4,27 +4,26 @@ from fastapi import (
     APIRouter,
     Depends,
 )
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import board as models
-from app.schemas import board as schemas
+from app.schemas import board as schemas_board
+from app.schemas import note as schemas_note
 from app.service import board as service
-from app.db import get_db
-
+from app.db import get_db as session
 
 router = APIRouter()
 
 
 @router.post(
     "/",
-    response_model=schemas.BoardBase,
+    response_model=schemas_board.BoardBase,
     status_code=201
 )
-def create_board(
-        board: schemas.BoardCreate,
-        db: Session = Depends(get_db)
-) -> models.Board:
-    return service.create_board(
+async def create_board(
+        board: schemas_board.BoardCreate,
+        db: AsyncSession = Depends(session)
+):
+    return await service.create_board(
         board_data=board,
         db=db,
     )
@@ -32,14 +31,14 @@ def create_board(
 
 @router.get(
     "/{board_id}",
-    response_model=schemas.Board,
+    response_model=schemas_board.Board,
     status_code=200
 )
-def get_board(
+async def get_board(
         board_id: UUID,
-        db: Session = Depends(get_db)
-) -> models.Board:
-    return service.get_board_by_id(
+        db: AsyncSession = Depends(session)
+):
+    return await service.get_board_by_id(
         board_id=board_id,
         db=db
     )
@@ -47,26 +46,26 @@ def get_board(
 
 @router.get(
     "/",
-    response_model=list[schemas.Board],
+    response_model=list[schemas_board.Board],
     status_code=200
 )
-def get_boards(
-        db: Session = Depends(get_db)
-) -> list[models.Board]:
-    return service.get_boards(db=db)
+async def get_boards(
+        db: AsyncSession = Depends(session)
+):
+    return await service.get_boards(db=db)
 
 
 @router.put(
     "/{board_id}",
-    response_model=schemas.Board,
+    response_model=schemas_board.Board,
     status_code=200
 )
-def update_board(
+async def update_board(
         board_id: UUID,
-        board: schemas.BoardUpdate,
-        db: Session = Depends(get_db)
-) -> models.Board:
-    return service.update_board(
+        board: schemas_board.BoardUpdate,
+        db: AsyncSession = Depends(session)
+):
+    return await service.update_board(
         board_id=board_id,
         board_data=board,
         db=db,
@@ -77,11 +76,44 @@ def update_board(
     "/{board_id}",
     status_code=204
 )
-def delete_board(
+async def delete_board(
         board_id: UUID,
-        db: Session = Depends(get_db)
+        db: AsyncSession = Depends(session)
 ):
-    return service.delete_board(
+    return await service.delete_board(
         board_id=board_id,
         db=db,
+    )
+
+
+@router.post(
+    "/{board_id}/notes",
+    response_model=schemas_board.Board,
+    status_code=200
+)
+async def add_note_to_board(
+        board_id: UUID,
+        note: schemas_note.NoteAdd,
+        db: AsyncSession = Depends(session)
+):
+    return await service.add_note_to_board(
+        board_id=board_id,
+        note=note,
+        db=db
+    )
+
+
+@router.delete(
+    "/{board_id}/notes/{note_id}",
+    status_code=204
+)
+async def delete_note_from_board(
+        board_id: UUID,
+        note_id: UUID,
+        db: AsyncSession = Depends(session)
+):
+    return await service.delete_note_from_board(
+        board_id=board_id,
+        note_id=note_id,
+        db=db
     )

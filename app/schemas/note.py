@@ -12,6 +12,10 @@ class NoteCreate(BaseModel):
     board_id: UUID
 
 
+class NoteAdd(BaseModel):
+    text: str
+
+
 class Note(NoteBase):
     text: str
     created_at: datetime
@@ -21,3 +25,4 @@ class Note(NoteBase):
 
 class NoteUpdate(BaseModel):
     text: str | None = None
+    board_id: UUID | None = None

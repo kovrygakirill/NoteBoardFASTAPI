@@ -14,11 +14,11 @@ router = APIRouter(
 
 router.include_router(
     note.router,
-    prefix='/note'
+    prefix='/notes'
 )
 router.include_router(
     board.router,
-    prefix='/board'
+    prefix='/boards'
 )
 
 
