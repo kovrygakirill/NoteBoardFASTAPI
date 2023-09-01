@@ -59,7 +59,7 @@ async def update_note(
         )
 
     return await NoteCRUD(db=db).update_note(
-        note_id=note_id,
+        note=note,
         update_data=note_data,
     )
 

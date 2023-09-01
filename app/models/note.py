@@ -41,7 +41,7 @@ class Note(Base):
     )
 
     board_id = Column(
-        UUID,
+        UUID(as_uuid=True),
         ForeignKey(
             "boards.id",
             ondelete="CASCADE",

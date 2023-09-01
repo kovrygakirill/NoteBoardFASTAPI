@@ -43,15 +43,16 @@ class NoteCRUD(BaseCRUD):
 
     async def update_note(
             self,
-            note_id: UUID,
+            note: Note,
             update_data: schemas.NoteUpdate,
     ) -> Note:
         query = update(Note).where(
-            Note.id == note_id
+            Note.id == note.id
         ).values(
             **update_data.dict(exclude_unset=True)
         ).returning(Note)
-        return await self.update_obj(query=query)
+        await self.update_obj(query=query)
+        return note
 
     async def delete_note(
             self,

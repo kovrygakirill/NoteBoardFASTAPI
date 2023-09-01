@@ -38,10 +38,10 @@ class BaseCRUD:
     async def update_obj(
             self,
             query: Update,
-    ) -> Base:
-        result = await self.db.execute(query)
+    ) -> True:
+        await self.db.execute(query)
         await self.db.commit()
-        return result.scalars().first()
+        return True
 
     async def delete_obj(
             self,

@@ -54,7 +54,7 @@ async def update_board(
     )
 
     return await BoardCRUD(db=db).update_board(
-        board_id=board_id,
+        board=board,
         update_data=board_data
     )
 

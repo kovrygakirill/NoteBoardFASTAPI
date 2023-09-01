@@ -47,15 +47,16 @@ class BoardCRUD(BaseCRUD):
 
     async def update_board(
             self,
-            board_id: UUID,
+            board: Board,
             update_data: schemas_board.BoardUpdate,
     ) -> Board:
         query = update(Board).where(
-            Board.id == board_id
+            Board.id == board.id
         ).values(
             **update_data.dict(exclude_unset=True)
-        ).returning(Board)
-        return await self.update_obj(query=query)
+        )
+        await self.update_obj(query=query)
+        return board
 
     async def delete_board(
             self,
@@ -79,4 +80,5 @@ class BoardCRUD(BaseCRUD):
     ) -> Board:
         board.notes.append(note)
         await self.db.commit()
+        await self.db.refresh(board)
         return board
